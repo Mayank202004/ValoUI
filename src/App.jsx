@@ -2,7 +2,7 @@ import React from 'react'
 
 const App = () => {
   return (
-    <h1>Mayank's Frontend</h1>
+    <h1 className="text-5xl text-orange-500 font-bold">Mayank's Frontend</h1>
   )
 }
 
