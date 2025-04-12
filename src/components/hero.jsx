@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react'
 import Button from './Button';
 import { TiLocationArrow } from 'react-icons/ti';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
 
 function Hero() {
 
@@ -21,6 +23,33 @@ function Hero() {
     setLoadedVideo((prev) => prev+1);
   }
 
+  useGSAP(
+    () => {
+      if (hasClicked) {
+        gsap.set("#next-video", { visibility: "visible" });
+        gsap.to("#next-video", {
+          transformOrigin: "center center",
+          scale: 1,
+          width: "100%",
+          height: "100%",
+          duration: 1,
+          ease: "power1.inOut",
+          onStart: () => nextVideoRef.current.play(),
+        });
+        gsap.from("#current-video", {
+          transformOrigin: "center center",
+          scale: 0,
+          duration: 1.5,
+          ease: "power1.inOut",
+        });
+      }
+    },
+    {
+      dependencies: [currentIndex],
+      revertOnUpdate: true,
+    }
+  );
+
   const getVideoSrc = (index) => `videos/hero-${index}.mp4`;
 
   return (
@@ -30,22 +59,24 @@ function Hero() {
             <div onClick={handleMiniVideoClick}
             className='origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100'>
               <video
-              src= {getVideoSrc((currentIndex % totalVideos) + 1)} 
               ref={nextVideoRef}
+              src= {getVideoSrc((currentIndex % totalVideos) + 1)} 
               loop
               muted
               id="current-video"
               className='size-64 origin-center scale-150 object-cover object-center'
+              onLoadedData={handleVideoLoad}
               />
             </div>
           </div>
           <div>
             <video 
-            src={getVideoSrc(currentIndex)}
             ref={nextVideoRef}
+            src={getVideoSrc(currentIndex)}
             loop
             muted
             id='next-video'
+            onLoadedData={handleVideoLoad}
             className='absolute-center invisible absolute z-20 size-64 object-cover object-center'/>
 
             <video 
